@@ -107,7 +107,7 @@
                                 <div class="action"><div class="key"><span>R</span></div></div>
                             </div>
                             <div class="keyboardRow">
-                                <p>Random mock up</p>
+                                <p>Randomize mockup</p>
                                 <div class="action"><div class="key"><span>`</span></div></div>
                             </div>
                             <div class="keyboardRow">
@@ -116,11 +116,11 @@
                             </div>
                             <div class="keyboardRow">
                                 <p>Rotate camera</p>
-                                <div class="action">[drag]</div>
+                                <div class="action">Drag</div>
                             </div>
                             <div class="keyboardRow">
                                 <p>Zoom in/out</p>
-                                <div class="action">[pinch] or [scroll]</div>
+                                <div class="action">Pinch or Scroll</div>
                             </div>
                             <div class="keyboardRow">
                                 <p>Move camera position</p>
@@ -142,24 +142,20 @@
                                 <p><a target="_blank" href="https://svelte.dev">Svelte</a> and <a target="_blank" href="https://threejs.org">Three.js</a></p>
                             </div>
                             <div class="colophonRow">
-                                <p>Mockbox Logo font:</p>
-                                <p><a target="_blank" href="https://www.bnicks.com/shop/p/gamma">BN Gamma</a></p>
-                            </div>
-                            <div class="colophonRow">
-                                <p>Primary font:</p>
-                                <p><a target="_blank" href="https://fonts.google.com/specimen/Libre+Franklin">Libre Franklin</a></p>
-                            </div>
-                            <div class="colophonRow">
-                                <p>Monospace font:</p>
-                                <p><a target="_blank" href="https://fonts.google.com/specimen/Spline+Sans+Mono">Spline Sans Mono</a></p>
+                                <p>Fonts:</p>
+                                <p>
+                                    <a target="_blank" href="https://www.bnicks.com/shop/p/gamma">BN Gamma</a>,
+                                    <a target="_blank" href="https://fonts.google.com/specimen/Libre+Franklin">Libre Franklin</a>,
+                                    <a target="_blank" href="https://fonts.google.com/specimen/Spline+Sans+Mono">Spline Sans Mono</a>
+                                </p>
                             </div>
                             <div class="colophonRow">
                                 <p>Icons:</p>
                                 <p><a target="_blank" href="https://v1.heroicons.com/">Heroicons v1</a></p>
                             </div>
                             <p class="caption">
-                                Shout out to Marco Land who I found out made <a target="_blank" href="https://bookup.marco.land/">a similar tool</a> for books in 2018. Interesting to see how we approach
-                                the same problem differently. 💛
+                                Shout out to <a target="_blank" href="https://marco.land/">Marco Land</a> who I recently found out made
+                                <a target="_blank" href="https://bookup.marco.land/">a similar tool</a> for books in 2018!
                             </p>
                         </div>
                     {/if}

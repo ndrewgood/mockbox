@@ -19,6 +19,7 @@
     import placeholderRight from '$lib/images/placeholder_right.png';
     import placeholderTop from '$lib/images/placeholder_top.png';
     import bedroomEnv from '$lib/images/bedroom.hdr';
+    import { exampleGroups, exampleTextures } from './exampleTextures';
 
     let canvasElement, canvasContainerElement;
     let handleDrop, handleMouseEvent, handleKeyDown;
@@ -85,6 +86,8 @@
             placeholder: placeholderBack,
         },
     ];
+
+    let randomTextureNum = Math.floor(Math.random() * exampleGroups.length);
 
     onMount(async () => {
         let camera, scene, cube, controls, loader, raycaster, testTex1, cubeMaterials, cubeTextures, selectedFace, matLine, envMap, directionalLight;
@@ -314,8 +317,8 @@
             }
         }
 
-        function uploadTexture(textureData, label) {
-            if (!textureData || !selectedFace) return;
+        function uploadTexture(textureData, label, randomTextureUpload = false) {
+            if (!textureData || (!selectedFace && !randomTextureUpload)) return;
 
             const faceIndex = $materialData.findIndex((f) => f.label == label);
             if (faceIndex === -1) return;
@@ -340,17 +343,19 @@
                 img.src = textureData.url;
                 $materialData[faceIndex].image = img;
 
-                img.onload = function () {
-                    let newShape = getGeoShape(
-                        $materialData.find((f) => f.label == label),
-                        $materialData,
-                        $geometryData,
-                        false
-                    );
-                    $geometryData.scale.value.width = newShape.width;
-                    $geometryData.scale.value.height = newShape.height;
-                    $geometryData.scale.value.depth = newShape.depth;
-                };
+                if (!randomTextureUpload) {
+                    img.onload = function () {
+                        let newShape = getGeoShape(
+                            $materialData.find((f) => f.label == label),
+                            $materialData,
+                            $geometryData,
+                            false
+                        );
+                        $geometryData.scale.value.width = newShape.width;
+                        $geometryData.scale.value.height = newShape.height;
+                        $geometryData.scale.value.depth = newShape.depth;
+                    };
+                }
             } else {
                 // Handle file uploads
 
@@ -428,7 +433,71 @@
 
             // "`" = Random mock up
             if (e.keyCode == 192) {
+                assignRandomMock(exampleGroups[Math.floor(Math.random() * exampleGroups.length)]);
             }
+        };
+
+        const assignRandomMock = (group) => {
+            let mockGroup = exampleTextures[randomTextureNum];
+
+            const rightData = {
+                type: 'url',
+                url: mockGroup.right.url,
+                width: mockGroup.right.width,
+                height: mockGroup.right.height,
+            };
+            const leftData = {
+                type: 'url',
+                url: mockGroup.left.url,
+                width: mockGroup.left.width,
+                height: mockGroup.left.height,
+            };
+            const topData = {
+                type: 'url',
+                url: mockGroup.top.url,
+                width: mockGroup.top.width,
+                height: mockGroup.top.height,
+            };
+            const bottomData = {
+                type: 'url',
+                url: mockGroup.bottom.url,
+                width: mockGroup.bottom.width,
+                height: mockGroup.bottom.height,
+            };
+            const frontData = {
+                type: 'url',
+                url: mockGroup.front.url,
+                width: mockGroup.front.width,
+                height: mockGroup.front.height,
+            };
+            const backData = {
+                type: 'url',
+                url: mockGroup.back.url,
+                width: mockGroup.back.width,
+                height: mockGroup.back.height,
+            };
+
+            uploadTexture(rightData, 'right', true);
+            $materialData[0].uploaded = rightData;
+            uploadTexture(leftData, 'left', true);
+            $materialData[1].uploaded = leftData;
+            uploadTexture(topData, 'top', true);
+            $materialData[2].uploaded = topData;
+            uploadTexture(bottomData, 'bottom', true);
+            $materialData[3].uploaded = bottomData;
+            uploadTexture(frontData, 'front', true);
+            $materialData[4].uploaded = frontData;
+            uploadTexture(backData, 'back', true);
+            $materialData[5].uploaded = backData;
+
+            $environmentData.cameraFov.value = mockGroup.fov;
+
+            $geometryData.scale.value.width = mockGroup.width;
+            $geometryData.scale.value.height = mockGroup.height;
+            $geometryData.scale.value.depth = mockGroup.depth;
+
+            console.log(mockGroup);
+            randomTextureNum == exampleGroups.length - 1 ? (randomTextureNum = 0) : randomTextureNum++;
         };
 
         const rotateX = (num) => {
@@ -462,8 +531,6 @@
         };
 
         materialData.subscribe((data) => {
-            console.log('subbed');
-
             for (let i = 0; i < selectedPlanesDir.length; i++) {
                 let index = faceData.findIndex((face) => face.label == selectedPlanesDir[i]);
                 // Trash -> remove texture
@@ -472,7 +539,7 @@
                     data[index].removed = false;
                 }
 
-                // Trash -> remove texture
+                // upload texture
                 if (data[index].uploaded !== null) {
                     uploadTexture(data[index].uploaded, data[index].label);
                     data[index].uploaded = null;
