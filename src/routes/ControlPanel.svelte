@@ -1,17 +1,19 @@
 <script>
     // @ts-nocheck
-    import { onDestroy } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { slide, fade } from 'svelte/transition';
     import { sineInOut, cubicInOut } from 'svelte/easing';
     import Control from './Control.svelte';
     import { globalData, geometryData, environmentData, animationData, exportData, materialData, bgImage } from './database';
     import { calculateSecondaryAltColor, calculateSecondaryColor, calculateTextPrimaryColor, calculateTextSecondaryColor, colorVars, getRatioSize, setHue, colorVarDefaults } from './utils';
+    import lottie from 'lottie-web';
 
     import Icon from './Icon.svelte';
     import Logo from '../lib/svg/mockbox_logo.svelte';
     import chroma from 'chroma-js';
     import Slider from './Slider.svelte';
     import MockboxLogo from '../lib/svg/mockbox_logo.svelte';
+    import MockboxLogoLottie from '$lib/json/mockbox-logo-lottie.json?url';
 
     let geoDisplay = true;
     let envDisplay = false;
@@ -232,6 +234,13 @@
 
     const togglePanelExpansion = () => {
         $globalData.panelTransitioning = true;
+        if (lottieContainer && !$globalData.panelExpanded) {
+            console.log('test');
+            lottie.goToAndStop(0);
+            setTimeout(() => {
+                lottie.play();
+            }, 100);
+        }
         $globalData.panelExpanded = !$globalData.panelExpanded;
         setTimeout(() => {
             $globalData.panelTransitioning = false;
@@ -242,6 +251,24 @@
         console.log('test');
         $globalData.modalOpen = !$globalData.modalOpen;
     };
+
+    let lottieContainer;
+
+    onMount(async () => {
+        // Fetch the JSON file
+        const response = await fetch(MockboxLogoLottie);
+        const animationData = await response.json();
+        console.log('Animation data loaded:', animationData);
+
+        lottie.loadAnimation({
+            container: lottieContainer,
+            animationData: animationData,
+            renderer: 'svg',
+            autoplay: true,
+            loop: false,
+        });
+        lottie.setSpeed(1.3);
+    });
 </script>
 
 <div id="container" class={$globalData.panelExpanded ? 'expanded' : 'collapsed'} style:transition-duration={$globalData.panelTransitioning ? '0.45s' : '0s'}>
@@ -250,7 +277,9 @@
             <button class={$globalData.panelExpanded ? 'menuButton expanded' : 'menuButton collapsed'} on:click={() => togglePanelExpansion()}>
                 <Icon name="menu" />
             </button>
-            {#if $globalData.panelExpanded}<h1 in:fade={transitionPanelDelay} out:fade={transitionPanel}><MockboxLogo /></h1>{/if}
+            <div id="lottieContainer" style:opacity={$globalData.panelExpanded ? '1' : '0'} style:transition-duration={$globalData.panelExpanded ? '0.2s' : '0.2s'}>
+                <div id="lottie" bind:this={lottieContainer}></div>
+            </div>
         </div>
         {#if $globalData.panelExpanded}<button
                 class="infoButton"
@@ -566,14 +595,6 @@
 
     #title .left button.collapsed {
         padding: 0 12px;
-        width: 100%;
-    }
-
-    #title h1 {
-        font-size: 24px;
-        font-weight: 600;
-        margin-block-start: 0;
-        margin-block-end: 0;
     }
 
     .header button,
@@ -599,7 +620,7 @@
         padding: 0 0 0 16px;
         overflow: hidden;
         transition-property: width, min-width;
-        transition-timing-function: var(--layout-easing);
+        transition-timing-function: var(--tab-easing);
     }
 
     .expanded {
@@ -628,7 +649,7 @@
         min-width: 350px;
         opacity: 1;
         transition: opacity 0.2s;
-        transition-timing-function: var(--layout-easing);
+        transition-timing-function: var(--tab-easing);
         contain: paint;
     }
 
@@ -681,7 +702,8 @@
     } */
 
     .group {
-        border-top: 1px solid var(--bg-300);
+        border: 1px solid var(--bg-400);
+        border-radius: 16px;
         padding: 0px 0px;
         margin-left: 1px;
         margin-right: 1px;
@@ -693,7 +715,10 @@
         will-change: transform;
         overflow: hidden;
         transition-property: height;
-        transition-timing-function: var(--layout-easing);
+        transition-timing-function: var(--group-easing);
+        margin-bottom: 4px;
+        background: var(--bg-primary);
+        outline: 1px solid var(--bg-primary);
     }
 
     .group:not(.expanded)::before {
@@ -702,15 +727,16 @@
         top: -2px;
         left: 0px;
         right: 0px;
-        bottom: 0px;
+        /* bottom: 0px; */
         border-top: 1px solid var(--bg-700);
         pointer-events: none;
     }
 
     .group.expanded {
+        border-top: 1px solid var(--bg-300);
         background: var(--bg-550);
-        border-radius: 16px;
-        margin-bottom: 12px;
+
+        margin-bottom: 8px;
         outline: 1px solid var(--bg-700);
     }
 
@@ -718,7 +744,7 @@
         padding: 0px 12px;
         opacity: 0;
         transition: opacity 0.2s;
-        transition-timing-function: var(--layout-easing);
+        transition-timing-function: var(--group-easing);
         pointer-events: none;
         user-select: none;
         -webkit-user-select: none;
@@ -1140,6 +1166,19 @@
         opacity: 1;
     }
 
+    #lottie {
+        /* width: 100px; */
+        height: 23px;
+    }
+
+    #lottieContainer {
+        width: 210px;
+        transition-property: opacity;
+    }
+    :global(.lottie-fill) {
+        fill: var(--hl-primary);
+    }
+
     @media (max-width: 600px) {
         #title {
             display: none;
@@ -1150,7 +1189,7 @@
             min-width: unset !important;
             padding: 0px;
             height: calc(100vh - 348px);
-            transition: height 0.5s var(--layout-easing);
+            transition: height 0.5s var(--tab-easing);
         }
 
         #globalControlsContainer {
@@ -1185,7 +1224,7 @@
         #globalControlsContainer,
         #selection {
             transition-property: height, margin-top, padding, opacity;
-            transition-timing-function: var(--layout-easing);
+            transition-timing-function: var(--tab-easing);
         }
 
         #globalControlsContainer.collapsed {
@@ -1204,7 +1243,7 @@
 
         #selection .top {
             transition-property: opacity, min-height;
-            transition-timing-function: var(--layout-easing);
+            transition-timing-function: var(--tab-easing);
             min-height: 23.5px;
         }
 

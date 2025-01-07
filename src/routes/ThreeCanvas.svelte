@@ -29,6 +29,7 @@
         mouseDownStatus = false;
     let animateNum = 0;
     let renderer;
+    let loadEnvironmentMap;
 
     const faceData = [
         {
@@ -90,6 +91,9 @@
     let randomTextureNum = Math.floor(Math.random() * exampleGroups.length);
 
     onMount(async () => {
+        // Start of onMount
+        performance.mark('three-mount-start');
+
         let camera, scene, cube, controls, loader, raycaster, testTex1, cubeMaterials, cubeTextures, selectedFace, matLine, envMap, directionalLight;
         let selectedPlanesDir = [];
         let selectedPlanesGroup, hoverPlanesGroup;
@@ -106,6 +110,9 @@
         let height = canvasContainerElement.clientHeight;
 
         const init = () => {
+            // Start of init
+            performance.mark('three-init-start');
+
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 300);
             camera.position.z = 6;
@@ -124,8 +131,10 @@
             let geometry = new THREE.BoxGeometry();
             geometry = geometry.toNonIndexed();
 
-            loader = new THREE.TextureLoader();
+            // Before texture loading
+            performance.mark('texture-load-start');
 
+            loader = new THREE.TextureLoader();
             cubeTextures = [
                 loader.load(placeholderRight),
                 loader.load(placeholderLeft),
@@ -134,6 +143,10 @@
                 loader.load(placeholderFront),
                 loader.load(placeholderBack),
             ];
+
+            // After texture loading
+            performance.mark('texture-load-end');
+            performance.measure('Texture Loading', 'texture-load-start', 'texture-load-end');
 
             for (let i = 0; i < cubeTextures.length; i++) {
                 cubeTextures[i].colorSpace = THREE.SRGBColorSpace;
@@ -177,15 +190,36 @@
             controls;
             controls.update();
 
-            const loadEnvironmentMap = () => {
-                new RGBELoader().load(bedroomEnv, function (texture) {
-                    texture.mapping = THREE.EquirectangularReflectionMapping;
-                    // renderer.toneMapping = THREE.NeutralToneMapping;
-                    renderer.toneMappingExposure = 2.5;
-                    envMap = texture;
-                });
+            loadEnvironmentMap = async () => {
+                // Load environment map in background
+                try {
+                    const texture = await new RGBELoader()
+                        .setDataType(THREE.HalfFloatType) // Optimize memory usage
+                        .loadAsync(bedroomEnv);
+
+                    // Process in smaller chunks using requestAnimationFrame
+                    requestAnimationFrame(() => {
+                        texture.mapping = THREE.EquirectangularReflectionMapping;
+                        renderer.toneMappingExposure = 2.5;
+                        envMap = texture;
+
+                        // Update materials gradually if needed
+                        if ($environmentData.glossy.value) {
+                            cubeMaterials.forEach((material, index) => {
+                                requestAnimationFrame(() => {
+                                    setCubeMaterialsGlossy(material);
+                                });
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading environment map:', error);
+                }
             };
-            loadEnvironmentMap();
+
+            // End of init
+            performance.mark('three-init-end');
+            performance.measure('Three.js Initialization', 'three-init-start', 'three-init-end');
         };
 
         let offsetGapHover = 0.01;
@@ -609,6 +643,7 @@
                 }
             }
             if ($environmentData.glossy.value !== lastGlossy) {
+                loadEnvironmentMap();
                 if ($environmentData.glossy.value) {
                     cubeMaterials.forEach(setCubeMaterialsGlossy);
                     cube.material = cubeMaterials;
@@ -1118,8 +1153,13 @@
             }
         });
 
+        // Initialize core scene first
         init();
         animate();
+
+        // End of onMount
+        performance.mark('three-mount-end');
+        performance.measure('Total Three.js Mount', 'three-mount-start', 'three-mount-end');
     });
 
     let hovered = false;

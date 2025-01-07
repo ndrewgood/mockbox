@@ -207,6 +207,9 @@
         --p-primary: #adb1bd;
 
         --layout-easing: cubic-bezier(0.645, 0.045, 0.355, 1);
+
+        --tab-easing: cubic-bezier(0.645, 0.045, 0.355, 1);
+        --group-easing: cubic-bezier(0.17, 0.45, 0.11, 0.9);
     }
 
     section {
