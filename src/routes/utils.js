@@ -79,9 +79,6 @@ export function getGeoShape(selected, allFaces, geometryData, rotated) {
             }
 
             let opposite = getOpposite(selected);
-            console.log('selected:', selected);
-            console.log('selected.image', selected.image);
-            console.log('selected.image.width', selected.image.width);
 
             let selectedRatio;
             if (rotated) {
@@ -136,7 +133,6 @@ export function getGeoShape(selected, allFaces, geometryData, rotated) {
                             // respect depth
                         } else {
                             newGeo.height = (selectedRatio.height / selectedRatio.width) * newGeo.depth;
-                            console.log('newGeo.height: ' + newGeo.height);
                             override = true;
                         }
                     } else {
@@ -148,7 +144,6 @@ export function getGeoShape(selected, allFaces, geometryData, rotated) {
                             // respect height
                         } else {
                             newGeo.depth = (selectedRatio.width / selectedRatio.height) * newGeo.height;
-                            console.log('newGeo.depth: ' + newGeo.depth);
                         }
                     } else if (!override) {
                         newGeo.height = selectedRatio.height;
@@ -183,8 +178,6 @@ export function getGeoShape(selected, allFaces, geometryData, rotated) {
                     }
                 }
             }
-
-            console.log(newGeo);
             resolve(newGeo);
         }
     });

@@ -1311,7 +1311,7 @@
             height: calc(100dvh - 147px);
             width: 100%;
             /* transform: scale(0.97); */
-            border-radius: 32px;
+            border-radius: 16px;
             /* outline: 17px solid var(--bg-primary);
             outline-offset: -16px; */
         }

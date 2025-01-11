@@ -7,6 +7,11 @@
     import Icon from './Icon.svelte';
     import ThreeCanvas from './ThreeCanvas.svelte';
     import { fade, fly } from 'svelte/transition';
+    import { onMount } from 'svelte';
+    import MockboxLogoLottie from '$lib/json/mockbox-logo-lottie.json?url';
+    import lottie from 'lottie-web';
+
+    let lottieMobileContainer;
 
     const togglePanelExpansion = () => {
         $globalData.panelTransitioning = true;
@@ -25,6 +30,22 @@
     const toggleModalTab = (tab) => {
         modalTab = tab;
     };
+
+    onMount(async () => {
+        // Fetch the JSON file
+        const response = await fetch(MockboxLogoLottie);
+        const animationData = await response.json();
+        console.log('Animation data loaded:', animationData);
+
+        lottie.loadAnimation({
+            container: lottieMobileContainer,
+            animationData: animationData,
+            renderer: 'svg',
+            autoplay: true,
+            loop: false,
+        });
+        lottie.setSpeed(1.4);
+    });
 </script>
 
 <section>
@@ -168,7 +189,9 @@
     <div id="mobileTitle">
         <div class="left">
             <button class="menuButton" on:click={() => togglePanelExpansion()}><Icon name="menu" /></button>
-            <MockboxLogo />
+            <div id="lottieContainer">
+                <div id="lottieMobile" bind:this={lottieMobileContainer}></div>
+            </div>
         </div>
         <button class="infoButton" on:click={() => toggleModal()}><Icon name="info" /></button>
     </div>
@@ -233,6 +256,11 @@
         flex-direction: row;
         align-items: center;
         gap: 8px;
+    }
+
+    #lottieContainer {
+        width: 210px;
+        margin-top: 5px;
     }
 
     .infoButton,
