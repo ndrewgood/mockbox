@@ -24,142 +24,170 @@ export function getRatioSize(width, height, maxValue) {
 }
 
 export function getGeoShape(selected, allFaces, geometryData, rotated) {
-    let geo = { width: geometryData.scale.value.width, height: geometryData.scale.value.height, depth: geometryData.scale.value.depth };
-    let newGeo = geo;
-
-    let getFace = (targetLabel) => {
-        return allFaces.find((f) => {
-            return f.label == targetLabel;
-        });
-    };
-
-    function getOpposite(sel) {
-        if (sel.label == 'front') {
-            return getFace('back');
+    // Return a promise that resolves when the image is loaded
+    return new Promise((resolve) => {
+        if (!selected.image) {
+            resolve({
+                width: geometryData.scale.value.width,
+                height: geometryData.scale.value.height,
+                depth: geometryData.scale.value.depth,
+            });
+            return;
         }
-        if (sel.label == 'back') {
-            return getFace('front');
-        }
-        if (sel.label == 'left') {
-            return getFace('right');
-        }
-        if (sel.label == 'right') {
-            return getFace('left');
-        }
-        if (sel.label == 'top') {
-            return getFace('bottom');
-        }
-        if (sel.label == 'bottom') {
-            return getFace('top');
-        }
-    }
 
-    let opposite = getOpposite(selected);
-    console.log(selected);
-
-    let selectedRatio;
-    if (rotated) {
-        selectedRatio = getRatioSize(selected.image.height, selected.image.width, 1);
-    } else {
-        selectedRatio = getRatioSize(selected.image.width, selected.image.height, 1);
-    }
-
-    let faceHasImage = (target) => {
-        return allFaces.find((f) => {
-            return f.label == target;
-        }).image;
-    };
-
-    let override = false;
-
-    if (selected.label == 'front' || selected.label == 'back') {
-        // imgWidth = width, imgHeight = height
-        if (opposite.image) {
-            return newGeo;
+        // Check if image is already loaded
+        if (selected.image.complete && selected.image.naturalWidth !== 0) {
+            processGeoShape();
         } else {
-            if (faceHasImage('top') || faceHasImage('bottom')) {
-                if (faceHasImage('left') || faceHasImage('right')) {
-                    // respect width
-                } else {
-                    newGeo.height = (selectedRatio.height / selectedRatio.width) * newGeo.width;
-                    override = true;
-                }
-            } else {
-                newGeo.width = selectedRatio.width;
-            }
-
-            if (faceHasImage('left') || faceHasImage('right')) {
-                if (faceHasImage('top') || faceHasImage('bottom')) {
-                } else {
-                    // DO SOMETHING
-                    newGeo.width = (selectedRatio.width / selectedRatio.height) * newGeo.height;
-                }
-            } else if (!override) {
-                newGeo.height = selectedRatio.height;
-            }
+            // Wait for image to load
+            selected.image.onload = processGeoShape;
         }
-    }
 
-    if (selected.label == 'left' || selected.label == 'right') {
-        // imgWidth = depth, imgHeight = height
-        if (opposite.image) {
-            return newGeo;
-        } else {
-            if (faceHasImage('top') || faceHasImage('bottom')) {
-                if (faceHasImage('front') || faceHasImage('back')) {
-                    // respect depth
-                } else {
-                    newGeo.height = (selectedRatio.height / selectedRatio.width) * newGeo.depth;
-                    console.log('newGeo.height: ' + newGeo.height);
-                    override = true;
+        function processGeoShape() {
+            let geo = {
+                width: geometryData.scale.value.width,
+                height: geometryData.scale.value.height,
+                depth: geometryData.scale.value.depth,
+            };
+            let newGeo = geo;
+
+            let getFace = (targetLabel) => {
+                return allFaces.find((f) => {
+                    return f.label == targetLabel;
+                });
+            };
+
+            function getOpposite(sel) {
+                if (sel.label == 'front') {
+                    return getFace('back');
                 }
+                if (sel.label == 'back') {
+                    return getFace('front');
+                }
+                if (sel.label == 'left') {
+                    return getFace('right');
+                }
+                if (sel.label == 'right') {
+                    return getFace('left');
+                }
+                if (sel.label == 'top') {
+                    return getFace('bottom');
+                }
+                if (sel.label == 'bottom') {
+                    return getFace('top');
+                }
+            }
+
+            let opposite = getOpposite(selected);
+            console.log('selected:', selected);
+            console.log('selected.image', selected.image);
+            console.log('selected.image.width', selected.image.width);
+
+            let selectedRatio;
+            if (rotated) {
+                selectedRatio = getRatioSize(selected.image.height, selected.image.width, 1);
             } else {
-                newGeo.depth = selectedRatio.width;
+                selectedRatio = getRatioSize(selected.image.width, selected.image.height, 1);
             }
 
-            if (faceHasImage('front') || faceHasImage('back')) {
-                if (faceHasImage('top') || faceHasImage('bottom')) {
-                    // respect height
+            let faceHasImage = (target) => {
+                return allFaces.find((f) => {
+                    return f.label == target;
+                }).image;
+            };
+
+            let override = false;
+
+            if (selected.label == 'front' || selected.label == 'back') {
+                // imgWidth = width, imgHeight = height
+                if (opposite.image) {
+                    return newGeo;
                 } else {
-                    newGeo.depth = (selectedRatio.width / selectedRatio.height) * newGeo.height;
-                    console.log('newGeo.depth: ' + newGeo.depth);
+                    if (faceHasImage('top') || faceHasImage('bottom')) {
+                        if (faceHasImage('left') || faceHasImage('right')) {
+                            // respect width
+                        } else {
+                            newGeo.height = (selectedRatio.height / selectedRatio.width) * newGeo.width;
+                            override = true;
+                        }
+                    } else {
+                        newGeo.width = selectedRatio.width;
+                    }
+
+                    if (faceHasImage('left') || faceHasImage('right')) {
+                        if (faceHasImage('top') || faceHasImage('bottom')) {
+                        } else {
+                            // DO SOMETHING
+                            newGeo.width = (selectedRatio.width / selectedRatio.height) * newGeo.height;
+                        }
+                    } else if (!override) {
+                        newGeo.height = selectedRatio.height;
+                    }
                 }
-            } else if (!override) {
-                newGeo.height = selectedRatio.height;
             }
+
+            if (selected.label == 'left' || selected.label == 'right') {
+                // imgWidth = depth, imgHeight = height
+                if (opposite.image) {
+                    return newGeo;
+                } else {
+                    if (faceHasImage('top') || faceHasImage('bottom')) {
+                        if (faceHasImage('front') || faceHasImage('back')) {
+                            // respect depth
+                        } else {
+                            newGeo.height = (selectedRatio.height / selectedRatio.width) * newGeo.depth;
+                            console.log('newGeo.height: ' + newGeo.height);
+                            override = true;
+                        }
+                    } else {
+                        newGeo.depth = selectedRatio.width;
+                    }
+
+                    if (faceHasImage('front') || faceHasImage('back')) {
+                        if (faceHasImage('top') || faceHasImage('bottom')) {
+                            // respect height
+                        } else {
+                            newGeo.depth = (selectedRatio.width / selectedRatio.height) * newGeo.height;
+                            console.log('newGeo.depth: ' + newGeo.depth);
+                        }
+                    } else if (!override) {
+                        newGeo.height = selectedRatio.height;
+                    }
+                }
+            }
+
+            if (selected.label == 'top' || selected.label == 'bottom') {
+                // imgWidth = width, imgHeight = depth
+                if (opposite.image) {
+                    return newGeo;
+                } else {
+                    if (faceHasImage('front') || faceHasImage('back')) {
+                        if (faceHasImage('left') || faceHasImage('right')) {
+                            // respect width
+                        } else {
+                            newGeo.depth = (selectedRatio.height / selectedRatio.width) * newGeo.width;
+                            override = true;
+                        }
+                    } else {
+                        newGeo.width = selectedRatio.width;
+                    }
+
+                    if (faceHasImage('left') || faceHasImage('right')) {
+                        if (faceHasImage('front') || faceHasImage('left')) {
+                            // respect height
+                        } else {
+                            newGeo.width = (selectedRatio.width / selectedRatio.height) * newGeo.depth;
+                        }
+                    } else if (!override) {
+                        newGeo.depth = selectedRatio.height;
+                    }
+                }
+            }
+
+            console.log(newGeo);
+            resolve(newGeo);
         }
-    }
-
-    if (selected.label == 'top' || selected.label == 'bottom') {
-        // imgWidth = width, imgHeight = depth
-        if (opposite.image) {
-            return newGeo;
-        } else {
-            if (faceHasImage('front') || faceHasImage('back')) {
-                if (faceHasImage('left') || faceHasImage('right')) {
-                    // respect width
-                } else {
-                    newGeo.depth = (selectedRatio.height / selectedRatio.width) * newGeo.width;
-                    override = true;
-                }
-            } else {
-                newGeo.width = selectedRatio.width;
-            }
-
-            if (faceHasImage('left') || faceHasImage('right')) {
-                if (faceHasImage('front') || faceHasImage('left')) {
-                    // respect height
-                } else {
-                    newGeo.width = (selectedRatio.width / selectedRatio.height) * newGeo.depth;
-                }
-            } else if (!override) {
-                newGeo.depth = selectedRatio.height;
-            }
-        }
-    }
-
-    console.log(newGeo);
-    return newGeo;
+    });
 }
 
 export function calculateSecondaryColor(color) {

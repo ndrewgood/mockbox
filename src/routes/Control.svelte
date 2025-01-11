@@ -89,7 +89,8 @@
                 let root = document.documentElement;
 
                 colorVars.forEach((colorVar) => {
-                    root.style.setProperty(colorVar, setHue(colorVar, derivedHue));
+                    const colorVarHex = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
+                    root.style.setProperty(colorVar, setHue(colorVarHex, derivedHue));
                 });
             }
             console.log($globalData.bgDerivedColor);
@@ -109,7 +110,8 @@
             let root = document.documentElement;
 
             colorVars.forEach((colorVar) => {
-                root.style.setProperty(colorVar, setHue(colorVar, bgHue));
+                const colorVarHex = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
+                root.style.setProperty(colorVar, setHue(colorVarHex, bgHue));
             });
         }
     };
@@ -158,7 +160,7 @@
                     </div>
                     <div
                         class="mask"
-                        style:transition-duration={boolTransitioning ? '0.2s' : '0s'}
+                        style:transition-duration={boolTransitioning ? '0.25s' : '0s'}
                         style={`clip-path: inset(calc(0px + 5px) calc(${activeValue == control.options[0] ? buttonTwoWidth : `0`}px + 8px) calc(0px + 5px) calc(${activeValue == control.options[0] ? 0 : buttonOneWidth}px + 8px) round 6px)`}
                     >
                         <button bind:clientWidth={buttonOneWidth}>
@@ -170,7 +172,7 @@
                     </div>
                     <div
                         class="container"
-                        style:transition-duration={boolTransitioning ? '0.2s' : '0s'}
+                        style:transition-duration={boolTransitioning ? '0.25s' : '0s'}
                         style={`left: calc(${activeValue == control.options[0] ? '4px' : buttonOneWidth + 'px + 8px'}); width: ${activeValue == control.options[0] ? buttonOneWidth : buttonTwoWidth}px;`}
                     ></div>
                 </div>
@@ -226,16 +228,14 @@
                 <div class="background">
                     <button
                         on:click={() => {
-                            control.value = false;
-                            activeValue = false;
+                            toggleBoolTransition(false);
                         }}
                     >
                         Off
                     </button>
                     <button
                         on:click={() => {
-                            control.value = true;
-                            activeValue = true;
+                            toggleBoolTransition(true);
                         }}
                     >
                         On
@@ -244,12 +244,12 @@
                 <div
                     class="mask"
                     style={`clip-path: inset(calc(0px + 5px) calc(${activeValue == false ? buttonTwoWidth : `0`}px + 8px) calc(0px + 5px) calc(${activeValue == false ? 0 : buttonOneWidth}px + 8px) round 6px)`}
+                    style:transition-duration={boolTransitioning ? '0.2s' : '0s'}
                 >
                     <button
                         bind:clientWidth={buttonOneWidth}
                         on:click={() => {
-                            control.value = false;
-                            activeValue = false;
+                            toggleBoolTransition(false);
                         }}
                     >
                         Off
@@ -257,14 +257,17 @@
                     <button
                         bind:clientWidth={buttonTwoWidth}
                         on:click={() => {
-                            control.value = true;
-                            activeValue = true;
+                            toggleBoolTransition(true);
                         }}
                     >
                         On
                     </button>
                 </div>
-                <div class="container" style={`left: calc(${activeValue == false ? '4px' : buttonOneWidth + 'px + 8px'}); width: ${activeValue == false ? buttonOneWidth : buttonTwoWidth}px;`}></div>
+                <div
+                    class="container"
+                    style:transition-duration={boolTransitioning ? '0.2s' : '0s'}
+                    style={`left: calc(${activeValue == false ? '4px' : buttonOneWidth + 'px + 8px'}); width: ${activeValue == false ? buttonOneWidth : buttonTwoWidth}px;`}
+                ></div>
             </div>
             {#if control.label == 'Spotlight'}
                 <div class="inlineRadio" style={!control.value ? 'opacity: 0.6; pointer-events: none;' : null}>
@@ -290,12 +293,18 @@
                         role="button"
                         tabindex="0"
                     >
-                        <input type="file" id="bgImagePreviewInput" accept=".png,.jpg,.jpeg,.gif,image/png,image/jpeg,image/gif" style="display: none;" on:change={(e) => handleUploadBgImage(e)} />
+                        <input
+                            type="file"
+                            id="bgImagePreviewInput"
+                            accept=".png,.jpg,.jpeg,.gif,.webp,image/png,image/jpeg,image/gif,image/webp"
+                            style="display: none;"
+                            on:change={(e) => handleUploadBgImage(e)}
+                        />
                     </div>
                 {/if}
                 {#if $bgImage == null}
                     <label for="uploadBgImageInput" class="uploadBgImageButton">Upload image</label>
-                    <input type="file" id="uploadBgImageInput" accept=".png,.jpg,.jpeg,.gif,image/png,image/jpeg,image/gif" style="display: none;" on:change={(e) => handleUploadBgImage(e)} />
+                    <input type="file" id="uploadBgImageInput" accept=".png,.jpg,.jpeg,.gif,.webp,image/png,image/jpeg,image/gif" style="display: none;" on:change={(e) => handleUploadBgImage(e)} />
                 {:else}
                     <button class="imageResetButton" on:click={() => handleResetBgImage()}>Reset</button>
                     <select bind:value={$globalData.bgImageMode.value}>
@@ -467,7 +476,7 @@
         -webkit-clip-path: inset(0 100% 0 0);
         clip-path: inset(0 100% 0 0);
         transition-property: clip-path;
-        transition-timing-function: var(--transition-timing-function);
+        transition-timing-function: var(--group-easing);
     }
 
     .bool .background,
@@ -515,7 +524,7 @@
         cursor: pointer;
         transform: translate(0, -50%);
         top: 50%;
-        transition-timing-function: var(--transition-timing-function);
+        transition-timing-function: var(--group-easing);
         transition-property: left, width, box-shadow;
         z-index: 0;
         background: var(--hl-primary);

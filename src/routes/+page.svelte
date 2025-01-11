@@ -56,12 +56,12 @@
                             <div class="aboutGif"></div>
                             <div class="textContainer">
                                 <p><b>Mockbox</b> is a drag-and-drop web tool for visualizing 3D box-shaped objects.</p>
-                                <p>Use Mockbox to:</p>
+                                <!-- <p>Use Mockbox to:</p>
                                 <ul>
                                     <li>Rapidly prototype during design exploration</li>
                                     <li>Export quick renders for presentations</li>
                                     <li>Record animations for portfolios or social media</li>
-                                </ul>
+                                </ul> -->
                             </div>
                             <div class="textContainer">
                                 <h1>How to use Mockbox</h1>
@@ -177,6 +177,7 @@
 <style>
     :global(body) {
         margin: 0;
+        overflow: hidden;
     }
 
     :global(:root) {
@@ -278,8 +279,8 @@
         border: 1px solid var(--bg-700);
         color: var(--hl-primary);
         width: 600px;
-        max-width: calc(100vw - 64px);
-        height: 460px;
+        max-width: calc(100vw - 88px);
+        height: 520px;
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -405,6 +406,7 @@
         width: 100%;
         max-width: 500px;
         margin: auto;
+        margin-top: 12px;
         padding-bottom: 32px;
     }
 
@@ -432,6 +434,7 @@
         font-size: 16px;
         font-weight: 600;
         color: var(--hl-primary);
+        margin-block-start: 0.2em;
     }
 
     .textContainer a {
@@ -455,6 +458,7 @@
         width: 100%;
         max-width: 400px;
         margin: auto;
+        margin-top: 12px;
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -500,6 +504,7 @@
         width: 100%;
         max-width: 400px;
         margin: auto;
+        margin-top: 12px;
         display: flex;
         flex-direction: column;
         gap: 24px;
@@ -537,6 +542,12 @@
         }
         #mobileTitle {
             display: flex;
+        }
+
+        .colophonRow {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
         }
     }
 </style>

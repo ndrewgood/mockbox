@@ -356,13 +356,9 @@
 
             const faceIndex = $materialData.findIndex((f) => f.label == label);
             if (faceIndex === -1) return;
-            console.log('label: ' + label);
 
             if (textureData.type === 'url') {
-                // Handle texture library images (direct URLs)
-
-                console.log(textureData);
-
+                // Handle texture library images
                 const newTex = new THREE.TextureLoader().load(textureData.url);
                 newTex.minFilter = THREE.NearestFilter;
                 newTex.magFilter = THREE.NearestFilter;
@@ -378,8 +374,8 @@
                 $materialData[faceIndex].image = img;
 
                 if (!randomTextureUpload) {
-                    img.onload = function () {
-                        let newShape = getGeoShape(
+                    img.onload = async function () {
+                        const newShape = await getGeoShape(
                             $materialData.find((f) => f.label == label),
                             $materialData,
                             $geometryData,
@@ -392,7 +388,6 @@
                 }
             } else {
                 // Handle file uploads
-
                 var reader = new FileReader();
 
                 reader.onload = function (event) {
@@ -401,8 +396,6 @@
                     newTex.minFilter = THREE.NearestFilter;
                     newTex.magFilter = THREE.NearestFilter;
                     newTex.colorSpace = THREE.SRGBColorSpace;
-
-                    console.log(textureData);
 
                     $materialData[faceIndex].scaleX = 0;
                     $materialData[faceIndex].scaleY = 0;
@@ -414,8 +407,8 @@
                     $materialData[faceIndex].image = img;
                 };
 
-                reader.onloadend = function () {
-                    let newShape = getGeoShape(
+                reader.onloadend = async function () {
+                    const newShape = await getGeoShape(
                         $materialData.find((f) => f.label == label),
                         $materialData,
                         $geometryData,
@@ -750,6 +743,7 @@
         });
 
         handleDrop = (e) => {
+            console.log('inital Drop:', e.dataTransfer.files[0]);
             // Prevent default behavior (Prevent file from being opened)
             e.preventDefault();
             if (intersected !== null) {
@@ -1011,15 +1005,17 @@
                         currentTexture.center = new THREE.Vector2(0.5, 0.5);
                         currentTexture.rotation = rotation * -(Math.PI / 2);
                         if (rotation == 1 || rotation == 3) {
-                            let newShape = getGeoShape($materialData[mat], $materialData, $geometryData, true);
-                            $geometryData.scale.value.width = newShape.width;
-                            $geometryData.scale.value.height = newShape.height;
-                            $geometryData.scale.value.depth = newShape.depth;
+                            getGeoShape($materialData[mat], $materialData, $geometryData, true).then((newShape) => {
+                                $geometryData.scale.value.width = newShape.width;
+                                $geometryData.scale.value.height = newShape.height;
+                                $geometryData.scale.value.depth = newShape.depth;
+                            });
                         } else {
-                            let newShape = getGeoShape($materialData[mat], $materialData, $geometryData, false);
-                            $geometryData.scale.value.width = newShape.width;
-                            $geometryData.scale.value.height = newShape.height;
-                            $geometryData.scale.value.depth = newShape.depth;
+                            getGeoShape($materialData[mat], $materialData, $geometryData, false).then((newShape) => {
+                                $geometryData.scale.value.width = newShape.width;
+                                $geometryData.scale.value.height = newShape.height;
+                                $geometryData.scale.value.depth = newShape.depth;
+                            });
                         }
                     }
                 }
@@ -1165,75 +1161,97 @@
     let hovered = false;
 </script>
 
-<div id="canvasContainer" class={$globalData.panelExpanded ? 'expanded' : 'collapsed'} style:transition-duration={$globalData.panelTransitioning ? '0.45s' : '0s'} bind:this={canvasContainerElement}>
-    <canvas
-        bind:this={canvasElement}
-        class={$globalData.panelExpanded ? 'expanded' : 'collapsed'}
-        on:mousemove={(e) => {
-            handleMouseEvent(e, 'move');
-            if (mouseDownStatus) {
-                mouseDragStatus = true;
-            }
-        }}
-        on:dragover={(e) => {
-            handleMouseEvent(e, 'move');
-        }}
-        on:drop={(e) => {
-            handleMouseEvent(e, 'drop');
-            handleDrop(e);
-            hovered = false;
-        }}
-        on:mousedown={(e) => {
-            if (intersected == null) {
-                mouseDragStatus = true;
-            }
-            mouseDownStatus = true;
-            lastMouseDown = e;
-        }}
-        on:mouseup={() => {
-            mouseDragStatus = false;
-            mouseDownStatus = false;
-        }}
-        on:click={(e) => {
-            if (e.clientX == lastMouseDown.clientX && e.clientY == lastMouseDown.clientY) {
-                handleMouseEvent(e, 'click');
-            }
-        }}
-        style:cursor={$exportData.hideCursorOverlay.value ? 'none' : mouseDragStatus ? 'move' : intersected !== null ? 'pointer' : 'default'}
-        style:background-color={$bgImage == null ? $globalData.bgColor.value : null}
-        style:background-image={$bgImage ? `url(${URL.createObjectURL($bgImage)})` : null}
-        style:background-size={$globalData.bgImageMode.value == 'Tile'
-            ? `${$globalData.bgImageWidth * ($globalData.bgImageScale.value / 100)}px`
-            : $globalData.bgImageMode.value == 'Cover'
-              ? 'cover'
-              : $globalData.bgImageMode.value == 'Stretch'
-                ? '100% 100%'
-                : null}
-        ondragover="return false"
-    ></canvas>
+<div id="canvasContainer" class={$globalData.panelExpanded ? 'expanded' : 'collapsed'} style:transition-duration={$globalData.panelTransitioning ? '0.45s' : '0s'}>
+    <div id="canvasInline" class={$globalData.panelExpanded ? 'expanded' : 'collapsed'} style:transition-duration={$globalData.panelTransitioning ? '0.45s' : '0s'} bind:this={canvasContainerElement}>
+        <canvas
+            bind:this={canvasElement}
+            class={$globalData.panelExpanded ? 'expanded' : 'collapsed'}
+            on:mousemove={(e) => {
+                handleMouseEvent(e, 'move');
+                if (mouseDownStatus) {
+                    mouseDragStatus = true;
+                }
+            }}
+            on:dragover={(e) => {
+                handleMouseEvent(e, 'move');
+            }}
+            on:drop={(e) => {
+                handleMouseEvent(e, 'drop');
+                handleDrop(e);
+                hovered = false;
+            }}
+            on:mousedown={(e) => {
+                if (intersected == null) {
+                    mouseDragStatus = true;
+                }
+                mouseDownStatus = true;
+                lastMouseDown = e;
+            }}
+            on:mouseup={() => {
+                mouseDragStatus = false;
+                mouseDownStatus = false;
+            }}
+            on:click={(e) => {
+                if (e.clientX == lastMouseDown.clientX && e.clientY == lastMouseDown.clientY) {
+                    handleMouseEvent(e, 'click');
+                }
+            }}
+            style:cursor={$exportData.hideCursorOverlay.value ? 'none' : mouseDragStatus ? 'move' : intersected !== null ? 'pointer' : 'default'}
+            style:background-color={$bgImage == null ? $globalData.bgColor.value : null}
+            style:background-image={$bgImage ? `url(${URL.createObjectURL($bgImage)})` : null}
+            style:background-size={$globalData.bgImageMode.value == 'Tile'
+                ? `${$globalData.bgImageWidth * ($globalData.bgImageScale.value / 100)}px`
+                : $globalData.bgImageMode.value == 'Cover'
+                  ? 'cover'
+                  : $globalData.bgImageMode.value == 'Stretch'
+                    ? '100% 100%'
+                    : null}
+            ondragover="return false"
+        ></canvas>
+    </div>
 </div>
 
 <svelte:window on:keydown={handleKeyDown} />
 
 <style>
     #canvasContainer {
-        height: 100vh;
+        height: 100dvh;
         overflow: hidden;
         width: 100%;
         background-color: var(--bg-primary);
+        padding: 16px;
+        transition:
+            padding 0.45s,
+            border-radius 0.45s;
+        transition-timing-function: var(--layout-easing);
+    }
+
+    #canvasInline {
+        width: 100%;
+        height: calc(100dvh - 32px);
+        transition: height 0.45s;
+        transition-timing-function: var(--layout-easing);
+    }
+
+    #canvasInline.collapsed {
+        height: calc(100dvh);
+    }
+
+    #canvasContainer.collapsed {
+        padding: 0;
     }
 
     canvas.expanded {
         width: calc(100vw - 350px);
         /* transform: scale(0.97); */
-        border-radius: 32px;
-        outline: 17px solid var(--bg-primary);
-        outline-offset: -16px;
+        border-radius: 16px;
+        /* outline: 17px solid var(--bg-primary);
+        outline-offset: -16px; */
     }
 
     canvas.collapsed {
         width: calc(100vw - 64px);
-        outline: 17px solid var(--bg-primary);
+        /* outline: 17px solid var(--bg-primary); */
         border-radius: 16px 0 0 16px;
     }
 
@@ -1248,7 +1266,7 @@
     canvas {
         display: flex;
         width: 100vw;
-        height: 100vh;
+        height: 100dvh;
         transition:
             border-radius 0.45s,
             transform 0.45s,
@@ -1264,27 +1282,38 @@
 
     @media (max-width: 600px) {
         #canvasContainer {
-            height: 300px;
+            height: 225px;
+            width: 100vw;
             transition-property: height;
             transition-timing-function: var(--layout-easing);
         }
 
+        #canvasInline {
+            height: 225px;
+            width: calc(100vw - 32px);
+        }
+
         canvas {
-            height: 300px;
+            height: 225px;
         }
 
         #canvasContainer.collapsed {
-            height: calc(100vh - 115px);
+            height: calc(100dvh - 147px);
             width: 100%;
+            padding: 16px;
+        }
+
+        #canvasInline.collapsed {
+            height: calc(100dvh - 147px);
         }
 
         canvas.collapsed {
-            height: calc(100vh - 115px);
+            height: calc(100dvh - 147px);
             width: 100%;
             /* transform: scale(0.97); */
             border-radius: 32px;
-            outline: 17px solid var(--bg-primary);
-            outline-offset: -16px;
+            /* outline: 17px solid var(--bg-primary);
+            outline-offset: -16px; */
         }
     }
 </style>

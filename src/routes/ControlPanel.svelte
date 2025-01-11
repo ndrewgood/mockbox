@@ -267,7 +267,7 @@
             autoplay: true,
             loop: false,
         });
-        lottie.setSpeed(1.3);
+        lottie.setSpeed(1.4);
     });
 </script>
 
@@ -572,13 +572,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 24px 6px 12px 12px;
+        padding: 24px 8px 12px 12px;
         /* height: 40px; */
         transition: padding 0.3s;
     }
 
     #title.collapsed {
-        padding: 24px 14px 8px 0px;
+        padding: 24px 14px 12px 0px;
     }
 
     #title .left {
@@ -615,7 +615,7 @@
         background: var(--bg-primary);
         display: flex;
         flex-direction: column;
-        height: 100vh;
+        height: 100dvh;
         color: var(--hl-primary);
         padding: 0 0 0 16px;
         overflow: hidden;
@@ -1009,11 +1009,11 @@
         padding: 8px 8px;
     }
 
+    .trashButton:hover,
     .transformControls button:hover {
         background-color: var(--bg-300);
     }
 
-    .trashButton:hover,
     .infoButton:hover,
     .exportButton:hover {
         background-color: var(--bg-400);
@@ -1124,7 +1124,7 @@
     }
 
     #camera .right {
-        margin-right: 4px;
+        margin-right: 6px;
     }
 
     .playButton {
@@ -1188,7 +1188,7 @@
             width: 100% !important;
             min-width: unset !important;
             padding: 0px;
-            height: calc(100vh - 348px);
+            height: calc(100dvh - 298px);
             transition: height 0.5s var(--tab-easing);
         }
 
@@ -1257,6 +1257,10 @@
             opacity: 1;
             pointer-events: auto;
             user-select: auto;
+        }
+
+        .textureLibraryScroll {
+            height: calc(100dvh - 468px);
         }
     }
 </style>
