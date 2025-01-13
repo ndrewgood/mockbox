@@ -30,24 +30,13 @@
     import texture_wood_end from '$lib/images/textures/texture_wood_end.png';
     import texture_wood_side from '$lib/images/textures/texture_wood_side.png';
     import texture_wood_top from '$lib/images/textures/texture_wood_top.png';
+    import texture_chipboard from '$lib/images/textures/texture_chipboard.jpg';
+    import texture_foil from '$lib/images/textures/texture_foil.jpg';
+    import texture_paper from '$lib/images/textures/texture_paper.jpg';
 
-    const textureGroups = ['Paper stacks', 'Materials', 'Wood plank'];
+    const textureGroups = ['Materials', 'Paper stacks', 'Wood plank'];
 
     const textureLibrary = [
-        {
-            label: 'Page stack (Tan)',
-            image: texture_pageStack_tan,
-            group: 'Paper stacks',
-            width: 481,
-            height: 2803,
-        },
-        {
-            label: 'Page stack (White)',
-            image: texture_pageStack_white,
-            group: 'Paper stacks',
-            width: 481,
-            height: 2803,
-        },
         {
             label: 'Cardboard',
             image: texture_cardboard,
@@ -69,7 +58,41 @@
             width: 2000,
             height: 2000,
         },
-
+        {
+            label: 'Paper',
+            image: texture_paper,
+            group: 'Materials',
+            width: 1281,
+            height: 1920,
+        },
+        {
+            label: 'Chipboard',
+            image: texture_chipboard,
+            group: 'Materials',
+            width: 1920,
+            height: 1282,
+        },
+        {
+            label: 'Foil',
+            image: texture_foil,
+            group: 'Materials',
+            width: 1920,
+            height: 1250,
+        },
+        {
+            label: 'Page stack (Tan)',
+            image: texture_pageStack_tan,
+            group: 'Paper stacks',
+            width: 481,
+            height: 2803,
+        },
+        {
+            label: 'Page stack (White)',
+            image: texture_pageStack_white,
+            group: 'Paper stacks',
+            width: 481,
+            height: 2803,
+        },
         {
             label: 'Wood (End)',
             image: texture_wood_end,

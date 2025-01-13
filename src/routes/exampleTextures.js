@@ -43,6 +43,11 @@ import vinyl_right from '$lib/images/exampleTextures/vinyl/vinyl_right.png';
 import vinyl_top from '$lib/images/exampleTextures/vinyl/vinyl_top.png';
 import vinyl_bottom from '$lib/images/exampleTextures/vinyl/vinyl_bottom.png';
 
+import crayons_bg from '$lib/images/exampleTextures/crayons/crayons_bg.jpg';
+import milkbone_bg from '$lib/images/exampleTextures/milkbone/milkbone_bg.png';
+import pretzel_bg from '$lib/images/exampleTextures/pretzel/pretzel_bg.webp';
+import tile_bg from '$lib/images/exampleTextures/tile/tile_bg.png';
+
 export const exampleGroups = ['book', 'crayons', 'pretzel', 'ps', 'tile', 'vinyl', 'milkbone'];
 
 export const exampleTextures = [
@@ -52,6 +57,10 @@ export const exampleTextures = [
         height: 1,
         width: 0.6570218772053634,
         fov: 10,
+        background: {
+            type: 'color',
+            value: '#1E1D1A',
+        },
         front: {
             url: book_front,
             width: 931,
@@ -89,6 +98,10 @@ export const exampleTextures = [
         height: 0.8764044943820225,
         depth: 0.09925093632958802,
         fov: 45,
+        background: {
+            type: 'image',
+            value: crayons_bg,
+        },
         front: {
             url: crayons_front,
             width: 1068,
@@ -126,6 +139,10 @@ export const exampleTextures = [
         height: 0.5245775729646698,
         depth: 0.3671274961597542,
         fov: 80,
+        background: {
+            type: 'image',
+            value: pretzel_bg,
+        },
         front: {
             url: pretzel_front,
             width: 1302,
@@ -163,6 +180,10 @@ export const exampleTextures = [
         height: 0.968944099378882,
         depth: 0.0970496894409938,
         fov: 90,
+        background: {
+            type: 'color',
+            value: '#0A0A0A',
+        },
         front: {
             url: ps_front1,
             width: 1288,
@@ -200,6 +221,10 @@ export const exampleTextures = [
         height: 0.07827788649706457,
         depth: 1,
         fov: 20,
+        background: {
+            type: 'image',
+            value: tile_bg,
+        },
         front: {
             url: tile_front,
             width: 1022,
@@ -237,6 +262,10 @@ export const exampleTextures = [
         height: 1,
         depth: 0.021114864864864864,
         fov: 90,
+        background: {
+            type: 'color',
+            value: '#F1F5E5',
+        },
         front: {
             url: vinyl_front,
             width: 1184,
@@ -274,6 +303,10 @@ export const exampleTextures = [
         height: 1,
         depth: 0.28095238095238095,
         fov: 60,
+        background: {
+            type: 'image',
+            value: milkbone_bg,
+        },
         front: {
             url: milkbone_front,
             width: 1241,

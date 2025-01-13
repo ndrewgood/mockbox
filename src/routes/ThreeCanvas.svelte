@@ -3,7 +3,9 @@
 
     import { onMount } from 'svelte';
     import { globalData, geometryData, environmentData, materialData, exportData, animationData, bgImage } from './database';
-    import { getGeoShape, mapNum } from './utils';
+    import { colorVars, getGeoShape, mapNum, setHue } from './utils';
+    import ColorThief from 'colorthief';
+    import chroma from 'chroma-js';
 
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -522,6 +524,61 @@
             $geometryData.scale.value.width = mockGroup.width;
             $geometryData.scale.value.height = mockGroup.height;
             $geometryData.scale.value.depth = mockGroup.depth;
+
+            if (mockGroup.background.type == 'color') {
+                $globalData.bgColor.value = mockGroup.background.value;
+                $bgImage = null;
+                $globalData.bgImageWidth = 0;
+                $globalData.bgImageHeight = 0;
+                $globalData.bgDerivedColor = null;
+            }
+            if (mockGroup.background.type == 'image') {
+                $bgImage = null; // Reset bgImage first
+
+                // Create a new Image object
+                const img = new Image();
+                const colorThief = new ColorThief();
+
+                img.crossOrigin = 'Anonymous'; // Enable CORS for ColorThief
+
+                img.onload = () => {
+                    // Create a temporary canvas to draw the image
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    // Determine file type and MIME type
+                    const fileExtension = mockGroup.background.value.split('.').pop().toLowerCase();
+                    const mimeType = fileExtension === 'webp' ? 'image/webp' : 'image/png';
+                    const fileName = `background.${fileExtension}`;
+
+                    // Convert the canvas to a Blob
+                    canvas.toBlob((blob) => {
+                        $bgImage = new File([blob], fileName, { type: mimeType });
+                        $globalData.bgImageWidth = img.width;
+                        $globalData.bgImageHeight = img.height;
+
+                        // Get color data for theming
+                        const color = colorThief.getColor(img);
+                        $globalData.bgDerivedColor = chroma(color[0], color[1], color[2]).hex();
+                        let derivedHue = chroma($globalData.bgDerivedColor).hsl()[0];
+
+                        if (typeof document !== 'undefined') {
+                            let root = document.documentElement;
+                            colorVars.forEach((colorVar) => {
+                                const colorVarHex = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
+                                root.style.setProperty(colorVar, setHue(colorVarHex, derivedHue));
+                            });
+                        }
+                    }, mimeType);
+                };
+
+                img.src = mockGroup.background.value;
+                $globalData.bgImageScale.value = $globalData.bgImageScale.default;
+                $globalData.bgImageMode.value = $globalData.bgImageMode.default;
+            }
 
             console.log(mockGroup);
             randomTextureNum == exampleGroups.length - 1 ? (randomTextureNum = 0) : randomTextureNum++;
@@ -1097,6 +1154,8 @@
 
             if ($bgImage) {
                 const bgImg = new Image();
+                const objectUrl = URL.createObjectURL($bgImage);
+
                 bgImg.onload = () => {
                     tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
 
@@ -1124,8 +1183,9 @@
                     const quality = mimeType === 'image/jpeg' ? 0.9 : undefined; // JPEG quality setting
                     createDownloadLink(tempCanvas.toDataURL(mimeType, quality));
                     renderer.setClearColor(0x000000, 0);
+                    URL.revokeObjectURL(objectUrl); // Clean up after image loads
                 };
-                bgImg.src = URL.createObjectURL($bgImage);
+                bgImg.src = objectUrl;
             } else {
                 // Simple export without background image
                 renderer.setClearColor($exportData.transparentBackground.value ? 0x000000 : $globalData.bgColor.value, $exportData.transparentBackground.value ? 0 : 1);
