@@ -14,6 +14,7 @@
 
     let lottieMobileContainer;
     let muxPlayer;
+    let hiddenMuxPlayer;
 
     const togglePanelExpansion = () => {
         $globalData.panelTransitioning = true;
@@ -60,6 +61,8 @@
     });
 </script>
 
+<mux-player bind:this={hiddenMuxPlayer} style="display: none;" playback-id="gFn2cYAXOiGI3whtdCJOovtZvU6UJ5DcGwDXzgV4H6Q" preload="auto" muted></mux-player>
+
 <section>
     {#if $globalData.modalOpen}
         <div
@@ -84,116 +87,109 @@
                     <button class="closeButton" on:click={() => toggleModal()}><Icon name="close" /></button>
                 </div>
                 <div class="content">
-                    {#if modalTab === 'about'}
-                        <div class="aboutContent">
-                            <div class="aboutGif" on:click={toggleVideo} on:keydown={(e) => (e.key === 'Enter' || e.key === ' ' ? toggleVideo() : null)} role="button" tabindex="0">
-                                <mux-player bind:this={muxPlayer} playback-id="gFn2cYAXOiGI3whtdCJOovtZvU6UJ5DcGwDXzgV4H6Q" autoPlay muted loop></mux-player>
-                            </div>
-                            <div class="textContainer">
-                                <p><b>Mockbox</b> is a drag-and-drop web tool for visualizing 3D box-shaped objects.</p>
-                                <!-- <p>Use Mockbox to:</p>
+                    <div class={modalTab == 'about' ? 'aboutContent opened' : 'aboutContent closed'}>
+                        <div class="aboutGif" on:click={toggleVideo} on:keydown={(e) => (e.key === 'Enter' || e.key === ' ' ? toggleVideo() : null)} role="button" tabindex="0">
+                            <mux-player bind:this={muxPlayer} playback-id="gFn2cYAXOiGI3whtdCJOovtZvU6UJ5DcGwDXzgV4H6Q" autoPlay muted loop></mux-player>
+                        </div>
+                        <div class="textContainer">
+                            <p><b>Mockbox</b> is a drag-and-drop web tool for visualizing 3D box-shaped objects.</p>
+                            <!-- <p>Use Mockbox to:</p>
                                 <ul>
                                     <li>Rapidly prototype during design exploration</li>
                                     <li>Export quick renders for presentations</li>
                                     <li>Record animations for portfolios or social media</li>
                                 </ul> -->
-                            </div>
-                            <div class="textContainer">
-                                <h1>How to use Mockbox</h1>
-                                <p>
-                                    Start by adding textures to your box by <b>drag-and-dropping</b> (or manually upload via the face selection window) images onto a face. By default, the cube will
-                                    <b>automatically scale</b> to match your texture’s aspect ratio, but you can also adjust this manually.
-                                </p>
-                                <p>
-                                    Customize your scene by adjusting <b>environment settings</b> like background, lighting, and FOV, and experiment with <b>animation settings</b> such as rotation axis,
-                                    speed, and easing.
-                                </p>
-                                <p>
-                                    Once you're ready, click the <b>download</b> button to download a still image, or press <b>play</b> and screen-record your screen for a looping animation.
-                                </p>
-                            </div>
-                            <div class="textContainer">
-                                <h1>Contact</h1>
-                                <p>For questions and inquiries, please contact <a target="_blank" href="mailto:hey@ndrewgood.com">hey@ndrewgood.com</a></p>
-                                <p class="caption">
-                                    Mockbox is released under the terms of the MIT License, which grants broad permissions to use, modify, and distribute the software, including for commercial
-                                    purposes.
-                                </p>
-                            </div>
                         </div>
-                    {/if}
-                    {#if modalTab === 'keyboard'}
-                        <div class="keyboardContent">
-                            <div class="keyboardRow">
-                                <p>Play/pause animation</p>
-                                <div class="action"><div class="key"><span>A</span></div></div>
-                            </div>
-                            <div class="keyboardRow">
-                                <p>Download screenshot</p>
-                                <div class="action"><div class="key"><span>D</span></div></div>
-                            </div>
-
-                            <div class="keyboardRow">
-                                <p>Collapse/expand sidebar</p>
-                                <div class="action"><div class="key"><span>C</span></div></div>
-                            </div>
-                            <div class="keyboardRow">
-                                <p>Reset camera</p>
-                                <div class="action"><div class="key"><span>R</span></div></div>
-                            </div>
-                            <div class="keyboardRow">
-                                <p>Randomize mockup</p>
-                                <div class="action"><div class="key"><span>`</span></div></div>
-                            </div>
-                            <div class="keyboardRow">
-                                <p>Remove selected texture</p>
-                                <div class="action"><div class="key"><span>Delete</span></div></div>
-                            </div>
-                            <div class="keyboardRow">
-                                <p>Rotate camera</p>
-                                <div class="action">Drag</div>
-                            </div>
-                            <div class="keyboardRow">
-                                <p>Zoom in/out</p>
-                                <div class="action">Pinch or Scroll</div>
-                            </div>
-                            <div class="keyboardRow">
-                                <p>Move camera position</p>
-                                <div class="action">
-                                    <div class="key"><span>Shift</span></div>
-                                    + [drag]
-                                </div>
-                            </div>
-                        </div>
-                    {/if}
-                    {#if modalTab === 'colophon'}
-                        <div class="colophonContent">
-                            <div class="colophonRow">
-                                <p>Design and Development:</p>
-                                <p><a target="_blank" href="https://ndrewgood.com">Andrew Goodridge</a></p>
-                            </div>
-                            <div class="colophonRow">
-                                <p>Stack:</p>
-                                <p><a target="_blank" href="https://svelte.dev">Svelte</a> and <a target="_blank" href="https://threejs.org">Three.js</a></p>
-                            </div>
-                            <div class="colophonRow">
-                                <p>Fonts:</p>
-                                <p>
-                                    <a target="_blank" href="https://www.bnicks.com/shop/p/gamma">BN Gamma</a>,
-                                    <a target="_blank" href="https://fonts.google.com/specimen/Libre+Franklin">Libre Franklin</a>,
-                                    <a target="_blank" href="https://fonts.google.com/specimen/Spline+Sans+Mono">Spline Sans Mono</a>
-                                </p>
-                            </div>
-                            <div class="colophonRow">
-                                <p>Icons:</p>
-                                <p><a target="_blank" href="https://v1.heroicons.com/">Heroicons v1</a></p>
-                            </div>
-                            <p class="caption">
-                                Shout out to <a target="_blank" href="https://marco.land/">Marco Land</a> who I recently found out made
-                                <a target="_blank" href="https://bookup.marco.land/">a similar tool</a> for books in 2018!
+                        <div class="textContainer">
+                            <h1>How to use Mockbox</h1>
+                            <p>
+                                Start by adding textures to your box by <b>drag-and-dropping</b> (or manually upload via the face selection window) images onto a face. By default, the cube will
+                                <b>automatically scale</b> to match your texture’s aspect ratio, but you can also adjust this manually.
+                            </p>
+                            <p>
+                                Customize your scene by adjusting <b>environment settings</b> like background, lighting, and FOV, and experiment with <b>animation settings</b> such as rotation axis, speed,
+                                and easing.
+                            </p>
+                            <p>
+                                Once you're ready, click the <b>download</b> button to download a still image, or press <b>play</b> and screen-record your screen for a looping animation.
                             </p>
                         </div>
-                    {/if}
+                        <div class="textContainer">
+                            <h1>Contact</h1>
+                            <p>For questions and inquiries, please contact <a target="_blank" href="mailto:hey@ndrewgood.com">hey@ndrewgood.com</a></p>
+                            <p class="caption">
+                                Mockbox is released under the terms of the MIT License, which grants broad permissions to use, modify, and distribute the software, including for commercial purposes.
+                            </p>
+                        </div>
+                    </div>
+                    <div class={modalTab == 'keyboard' ? 'keyboardContent opened' : 'keyboardContent closed'}>
+                        <div class="keyboardRow">
+                            <p>Play/pause animation</p>
+                            <div class="action"><div class="key"><span>A</span></div></div>
+                        </div>
+                        <div class="keyboardRow">
+                            <p>Download screenshot</p>
+                            <div class="action"><div class="key"><span>D</span></div></div>
+                        </div>
+
+                        <div class="keyboardRow">
+                            <p>Collapse/expand sidebar</p>
+                            <div class="action"><div class="key"><span>C</span></div></div>
+                        </div>
+                        <div class="keyboardRow">
+                            <p>Reset camera</p>
+                            <div class="action"><div class="key"><span>R</span></div></div>
+                        </div>
+                        <div class="keyboardRow">
+                            <p>Randomize mockup</p>
+                            <div class="action"><div class="key"><span>`</span></div></div>
+                        </div>
+                        <div class="keyboardRow">
+                            <p>Remove selected texture</p>
+                            <div class="action"><div class="key"><span>Delete</span></div></div>
+                        </div>
+                        <div class="keyboardRow">
+                            <p>Rotate camera</p>
+                            <div class="action">Drag</div>
+                        </div>
+                        <div class="keyboardRow">
+                            <p>Zoom in/out</p>
+                            <div class="action">Pinch or Scroll</div>
+                        </div>
+                        <div class="keyboardRow">
+                            <p>Move camera position</p>
+                            <div class="action">
+                                <div class="key"><span>Shift</span></div>
+                                + [drag]
+                            </div>
+                        </div>
+                    </div>
+                    <div class={modalTab == 'colophon' ? 'colophonContent opened' : 'colophonContent closed'}>
+                        <div class="colophonRow">
+                            <p>Design and Development:</p>
+                            <p><a target="_blank" href="https://ndrewgood.com">Andrew Goodridge</a></p>
+                        </div>
+                        <div class="colophonRow">
+                            <p>Stack:</p>
+                            <p><a target="_blank" href="https://svelte.dev">Svelte</a> and <a target="_blank" href="https://threejs.org">Three.js</a></p>
+                        </div>
+                        <div class="colophonRow">
+                            <p>Fonts:</p>
+                            <p>
+                                <a target="_blank" href="https://www.bnicks.com/shop/p/gamma">BN Gamma</a>,
+                                <a target="_blank" href="https://fonts.google.com/specimen/Libre+Franklin">Libre Franklin</a>,
+                                <a target="_blank" href="https://fonts.google.com/specimen/Spline+Sans+Mono">Spline Sans Mono</a>
+                            </p>
+                        </div>
+                        <div class="colophonRow">
+                            <p>Icons:</p>
+                            <p><a target="_blank" href="https://v1.heroicons.com/">Heroicons v1</a></p>
+                        </div>
+                        <p class="caption">
+                            Shout out to <a target="_blank" href="https://marco.land/">Marco Land</a> who I recently found out made
+                            <a target="_blank" href="https://bookup.marco.land/">a similar tool</a> for books in 2018!
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -439,6 +435,17 @@
         &::-webkit-scrollbar {
             display: none;
         }
+    }
+
+    .aboutContent.closed,
+    .keyboardContent.closed,
+    .colophonContent.closed {
+        display: none;
+    }
+    .aboutContent.opened,
+    .keyboardContent.opened,
+    .colophonContent.opened {
+        display: flex;
     }
 
     .aboutContent {
