@@ -1343,7 +1343,7 @@
     @media (max-width: 600px) {
         #canvasContainer {
             height: 225px;
-            width: 100vw;
+            width: auto;
             transition-property: height;
             transition-timing-function: var(--layout-easing);
         }

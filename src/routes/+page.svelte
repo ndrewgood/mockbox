@@ -10,8 +10,10 @@
     import { onMount } from 'svelte';
     import MockboxLogoLottie from '$lib/json/mockbox-logo-lottie.json?url';
     import lottie from 'lottie-web';
+    import '@mux/mux-player';
 
     let lottieMobileContainer;
+    let muxPlayer;
 
     const togglePanelExpansion = () => {
         $globalData.panelTransitioning = true;
@@ -29,6 +31,16 @@
 
     const toggleModalTab = (tab) => {
         modalTab = tab;
+    };
+
+    const toggleVideo = () => {
+        if (muxPlayer) {
+            if (muxPlayer.paused) {
+                muxPlayer.play();
+            } else {
+                muxPlayer.pause();
+            }
+        }
     };
 
     onMount(async () => {
@@ -74,7 +86,9 @@
                 <div class="content">
                     {#if modalTab === 'about'}
                         <div class="aboutContent">
-                            <div class="aboutGif"></div>
+                            <div class="aboutGif" on:click={toggleVideo} on:keydown={(e) => (e.key === 'Enter' || e.key === ' ' ? toggleVideo() : null)} role="button" tabindex="0">
+                                <mux-player bind:this={muxPlayer} playback-id="gFn2cYAXOiGI3whtdCJOovtZvU6UJ5DcGwDXzgV4H6Q" autoPlay muted loop></mux-player>
+                            </div>
                             <div class="textContainer">
                                 <p><b>Mockbox</b> is a drag-and-drop web tool for visualizing 3D box-shaped objects.</p>
                                 <!-- <p>Use Mockbox to:</p>
@@ -308,7 +322,7 @@
         color: var(--hl-primary);
         width: 600px;
         max-width: calc(100vw - 88px);
-        height: 520px;
+        height: 550px;
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -443,10 +457,25 @@
     }
 
     .aboutGif {
-        height: 250px;
-        width: 100%;
+        /* width: 100%; */
         background-color: var(--bg-700);
         border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        cursor: pointer;
+        transition: transform 0.4s var(--group-easing);
+    }
+
+    .aboutGif:hover {
+        transform: scale(0.98);
+    }
+
+    .aboutGif:active {
+        transform: scale(0.97);
+    }
+
+    mux-player {
+        --controls: none;
     }
 
     .textContainer {
@@ -567,6 +596,7 @@
     @media (max-width: 600px) {
         section {
             flex-direction: column-reverse;
+            user-select: none;
         }
         #mobileTitle {
             display: flex;
