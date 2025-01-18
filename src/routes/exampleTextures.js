@@ -42,13 +42,20 @@ import vinyl_left from '$lib/images/exampleTextures/vinyl/vinyl_left.png';
 import vinyl_right from '$lib/images/exampleTextures/vinyl/vinyl_right.png';
 import vinyl_top from '$lib/images/exampleTextures/vinyl/vinyl_top.png';
 import vinyl_bottom from '$lib/images/exampleTextures/vinyl/vinyl_bottom.png';
+import epic_back from '$lib/images/exampleTextures/epic/epic_back.png';
+import epic_front from '$lib/images/exampleTextures/epic/epic_front.jpg';
+import epic_left from '$lib/images/exampleTextures/epic/epic_left.png';
+import epic_right from '$lib/images/exampleTextures/epic/epic_right.png';
+import epic_top from '$lib/images/exampleTextures/epic/epic_top.png';
+import epic_bottom from '$lib/images/exampleTextures/epic/epic_bottom.png';
 
-import crayons_bg from '$lib/images/exampleTextures/crayons/crayons_bg.jpg';
+import crayons_bg from '$lib/images/exampleTextures/crayons/crayons_bg.png';
 import milkbone_bg from '$lib/images/exampleTextures/milkbone/milkbone_bg.png';
-import pretzel_bg from '$lib/images/exampleTextures/pretzel/pretzel_bg.webp';
+import pretzel_bg from '$lib/images/exampleTextures/pretzel/pretzel_bg.png';
 import tile_bg from '$lib/images/exampleTextures/tile/tile_bg.png';
+import vinyl_bg from '$lib/images/exampleTextures/vinyl/vinyl_bg.png';
 
-export const exampleGroups = ['book', 'crayons', 'pretzel', 'ps', 'tile', 'vinyl', 'milkbone'];
+export const exampleGroups = ['book', 'epic', 'crayons', 'pretzel', 'ps', 'tile', 'vinyl', 'milkbone'];
 
 export const exampleTextures = [
     {
@@ -59,7 +66,7 @@ export const exampleTextures = [
         fov: 10,
         background: {
             type: 'color',
-            value: '#1E1D1A',
+            value: '#e53d1f',
         },
         front: {
             url: book_front,
@@ -131,6 +138,47 @@ export const exampleTextures = [
             url: crayons_bottom,
             width: 1068,
             height: 106,
+        },
+    },
+    {
+        label: 'epic',
+        width: 1,
+        height: 1,
+        depth: 0.02666666666666667,
+        fov: 20,
+        background: {
+            type: 'color',
+            value: '#FAFAFA',
+        },
+        front: {
+            url: epic_front,
+            width: 1200,
+            height: 1200,
+        },
+        back: {
+            url: epic_back,
+            width: 1200,
+            height: 1200,
+        },
+        left: {
+            url: epic_left,
+            width: 32,
+            height: 1200,
+        },
+        right: {
+            url: epic_right,
+            width: 32,
+            height: 1200,
+        },
+        top: {
+            url: epic_top,
+            width: 32,
+            height: 1200,
+        },
+        bottom: {
+            url: epic_bottom,
+            width: 32,
+            height: 1200,
         },
     },
     {
@@ -263,8 +311,8 @@ export const exampleTextures = [
         depth: 0.021114864864864864,
         fov: 90,
         background: {
-            type: 'color',
-            value: '#F1F5E5',
+            type: 'image',
+            value: vinyl_bg,
         },
         front: {
             url: vinyl_front,

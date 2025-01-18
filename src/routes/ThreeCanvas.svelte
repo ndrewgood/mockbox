@@ -3,7 +3,7 @@
 
     import { onMount } from 'svelte';
     import { globalData, geometryData, environmentData, materialData, exportData, animationData, bgImage } from './database';
-    import { colorVars, getGeoShape, mapNum, setHue } from './utils';
+    import { colorVarDefaults, colorVars, getGeoShape, mapNum, setHue } from './utils';
     import ColorThief from 'colorthief';
     import chroma from 'chroma-js';
 
@@ -567,9 +567,9 @@
 
                         if (typeof document !== 'undefined') {
                             let root = document.documentElement;
-                            colorVars.forEach((colorVar) => {
-                                const colorVarHex = getComputedStyle(document.documentElement).getPropertyValue(colorVar).trim();
-                                root.style.setProperty(colorVar, setHue(colorVarHex, derivedHue));
+                            colorVars.forEach((colorVar, i) => {
+                                let colorStart = colorVarDefaults[i];
+                                root.style.setProperty(colorVar, setHue(colorStart, derivedHue));
                             });
                         }
                     }, mimeType);
@@ -1152,6 +1152,16 @@
                 document.body.removeChild(link);
             };
 
+            // If transparent background is enabled, skip background rendering
+            if ($exportData.transparentBackground.value) {
+                renderer.setClearColor(0x000000, 0);
+                renderer.render(scene, camera);
+                const mimeType = 'image/png'; // Force PNG for transparency
+                createDownloadLink(canvasElement.toDataURL(mimeType));
+                renderer.setClearColor(0x000000, 0);
+                return;
+            }
+
             if ($bgImage) {
                 const bgImg = new Image();
                 const objectUrl = URL.createObjectURL($bgImage);
@@ -1180,18 +1190,18 @@
                     tempCtx.drawImage(canvasElement, 0, 0);
 
                     const mimeType = $exportData.fileType.value === 'PNG' ? 'image/png' : 'image/jpeg';
-                    const quality = mimeType === 'image/jpeg' ? 0.9 : undefined; // JPEG quality setting
+                    const quality = mimeType === 'image/jpeg' ? 0.9 : undefined;
                     createDownloadLink(tempCanvas.toDataURL(mimeType, quality));
                     renderer.setClearColor(0x000000, 0);
-                    URL.revokeObjectURL(objectUrl); // Clean up after image loads
+                    URL.revokeObjectURL(objectUrl);
                 };
                 bgImg.src = objectUrl;
             } else {
-                // Simple export without background image
-                renderer.setClearColor($exportData.transparentBackground.value ? 0x000000 : $globalData.bgColor.value, $exportData.transparentBackground.value ? 0 : 1);
+                // Simple export with solid background color
+                renderer.setClearColor($globalData.bgColor.value, 1);
                 renderer.render(scene, camera);
                 const mimeType = $exportData.fileType.value === 'PNG' ? 'image/png' : 'image/jpeg';
-                const quality = mimeType === 'image/jpeg' ? 0.9 : undefined; // JPEG quality setting
+                const quality = mimeType === 'image/jpeg' ? 0.9 : undefined;
                 createDownloadLink(canvasElement.toDataURL(mimeType, quality));
                 renderer.setClearColor(0x000000, 0);
             }
