@@ -118,7 +118,7 @@
                             <h1>Contact</h1>
                             <p>For questions and inquiries, please contact <a target="_blank" href="mailto:hey@ndrewgood.com">hey@ndrewgood.com</a></p>
                             <p class="caption">
-                                Mockbox is released under the terms of the MIT License, which grants broad permissions to use, modify, and distribute the software, including for commercial purposes.
+                                Mockbox is released under the terms of the MIT License, which grants permissions to use, modify, and distribute the software, including for commercial purposes.
                             </p>
                         </div>
                     </div>
@@ -186,7 +186,7 @@
                             <p><a target="_blank" href="https://v1.heroicons.com/">Heroicons v1</a></p>
                         </div>
                         <p class="caption">
-                            Shout out to <a target="_blank" href="https://marco.land/">Marco Land</a> who I recently found out made
+                            Shout out to <a target="_blank" href="https://marco.land/">Marco Land</a> who I made
                             <a target="_blank" href="https://bookup.marco.land/">a similar tool</a> for books in 2018!
                         </p>
                     </div>
