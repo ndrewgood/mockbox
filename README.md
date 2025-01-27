@@ -1,38 +1,14 @@
-# create-svelte
+# 📦 Mockbox
+Mockbox is a drag-and-drop web tool for visualizing 3D box-shaped objects.
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+![overview-demo2](https://github.com/user-attachments/assets/cf8d0ae7-8a4a-445d-88a7-d6fe3a29923b)
 
-## Creating a project
+## How to use Mockbox
+Start by adding textures to your box by drag-and-dropping (or manually upload via the face selection window) images onto a face. By default, the cube will automatically scale to match your texture’s aspect ratio, but you can also adjust this manually.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Customize your scene by adjusting environment settings like background, lighting, and FOV, and experiment with animation settings such as rotation axis, speed, and easing.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+Once you're ready, click the download button to download a still image, or press play and screen-record your screen for a looping animation.
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Contact
+For questions and inquiries, please contact hey@ndrewgood.com
