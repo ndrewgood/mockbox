@@ -6,7 +6,6 @@
     import Control from './Control.svelte';
     import { globalData, geometryData, environmentData, animationData, exportData, materialData, bgImage } from './database';
     import { calculateSecondaryAltColor, calculateSecondaryColor, calculateTextPrimaryColor, calculateTextSecondaryColor, colorVars, getRatioSize, setHue, colorVarDefaults } from './utils';
-    import lottie from 'lottie-web';
 
     import Icon from './Icon.svelte';
     import Logo from '../lib/svg/mockbox_logo.svelte';
@@ -257,7 +256,7 @@
 
     const togglePanelExpansion = () => {
         $globalData.panelTransitioning = true;
-        if (lottieContainer && !$globalData.panelExpanded) {
+        if (lottieContainer && lottie && !$globalData.panelExpanded) {
             console.log('test');
             lottie.goToAndStop(0);
             setTimeout(() => {
@@ -276,8 +275,13 @@
     };
 
     let lottieContainer;
+    let lottie;
 
     onMount(async () => {
+        // Dynamically import lottie-web only on the client side
+        const lottieModule = await import('lottie-web');
+        lottie = lottieModule.default;
+        
         // Fetch the JSON file
         const response = await fetch(MockboxLogoLottie);
         const animationData = await response.json();

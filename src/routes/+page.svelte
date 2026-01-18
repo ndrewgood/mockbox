@@ -9,7 +9,6 @@
     import { fade, fly } from 'svelte/transition';
     import { onMount } from 'svelte';
     import MockboxLogoLottie from '$lib/json/mockbox-logo-lottie.json?url';
-    import lottie from 'lottie-web';
     import '@mux/mux-player';
 
     let lottieMobileContainer;
@@ -45,6 +44,10 @@
     };
 
     onMount(async () => {
+        // Dynamically import lottie-web only on the client side
+        const lottieModule = await import('lottie-web');
+        const lottie = lottieModule.default;
+        
         // Fetch the JSON file
         const response = await fetch(MockboxLogoLottie);
         const animationData = await response.json();
